@@ -1,0 +1,1246 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AntiFraude Hub | Por Andrew Barros</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════
+   TOKENS — light & dark
+═══════════════════════════════════════════ */
+:root {
+  --li-blue:#0A66C2; --li-blue-dark:#004182; --li-blue-light:#70B5F9;
+  --li-bg:#F3F2EF; --li-white:#FFFFFF; --li-black:#1C1C1C;
+  --li-gray:#555; --li-gray-light:#E0DFDC; --li-gray-mid:#999;
+  --li-green:#057642; --li-red:#CC1016; --li-orange:#C4660A;
+  --card-shadow:0 0 0 1px rgba(0,0,0,0.08),0 4px 20px rgba(0,0,0,0.06);
+  --card-hover:0 0 0 1px rgba(10,102,194,.2),0 8px 32px rgba(10,102,194,.12);
+  --radius:12px; --radius-sm:8px;
+  --nav-h:60px;
+}
+[data-theme="dark"]{
+  --li-bg:#1B1F23; --li-white:#23282D; --li-black:#E8E6E3;
+  --li-gray:#AAA; --li-gray-light:#2E3338; --li-gray-mid:#666;
+  --li-blue:#5B9BD5; --li-blue-dark:#4080BB; --li-blue-light:#3A6A9A;
+  --card-shadow:0 0 0 1px rgba(255,255,255,0.06),0 4px 20px rgba(0,0,0,0.4);
+  --card-hover:0 0 0 1px rgba(91,155,213,.3),0 8px 32px rgba(91,155,213,.15);
+}
+
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--li-bg);color:var(--li-black);font-size:15px;line-height:1.6;-webkit-font-smoothing:antialiased;transition:background .3s,color .3s}
+
+/* ── VIEWS ── */
+.view{display:none}
+.view.active{display:block}
+
+/* ═══════════════════════════════════════════
+   NAV
+═══════════════════════════════════════════ */
+nav{background:var(--li-white);border-bottom:1px solid var(--li-gray-light);position:sticky;top:0;z-index:200;box-shadow:0 1px 8px rgba(0,0,0,.07);transition:background .3s}
+.nav-inner{max-width:1200px;margin:0 auto;padding:0 20px;height:var(--nav-h);display:flex;align-items:center;gap:16px}
+.nav-logo{display:flex;align-items:center;gap:9px;text-decoration:none;cursor:pointer;flex-shrink:0}
+.logo-icon{width:34px;height:34px;background:var(--li-blue);border-radius:8px;display:flex;align-items:center;justify-content:center}
+.logo-icon svg{width:18px;height:18px;fill:white}
+.logo-text{font-family:'DM Serif Display',serif;font-size:19px;color:var(--li-black);letter-spacing:-.3px}
+.logo-text span{color:var(--li-blue)}
+
+/* search bar */
+.nav-search{flex:1;max-width:360px;position:relative}
+.nav-search input{width:100%;border:1.5px solid var(--li-gray-light);border-radius:24px;padding:7px 16px 7px 36px;font-size:13px;font-family:'DM Sans',sans-serif;background:var(--li-bg);color:var(--li-black);outline:none;transition:border-color .2s,background .3s}
+.nav-search input:focus{border-color:var(--li-blue);background:var(--li-white)}
+.nav-search input::placeholder{color:var(--li-gray-mid)}
+.nav-search .search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:13px;pointer-events:none}
+.search-results-drop{position:absolute;top:calc(100% + 6px);left:0;right:0;background:var(--li-white);border-radius:var(--radius-sm);box-shadow:var(--card-hover);display:none;z-index:300;overflow:hidden;border:1px solid var(--li-gray-light)}
+.search-results-drop.open{display:block}
+.search-result-item{padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--li-gray-light);transition:background .15s}
+.search-result-item:last-child{border-bottom:none}
+.search-result-item:hover{background:var(--li-bg)}
+.sri-cat{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--li-blue);margin-bottom:2px}
+.sri-title{font-size:13px;color:var(--li-black);font-weight:500;line-height:1.3}
+
+.nav-tabs{display:flex;gap:4px;flex:1;justify-content:center;flex-wrap:wrap}
+.nav-tab{font-size:12px;font-weight:600;padding:5px 13px;border-radius:20px;cursor:pointer;border:1.5px solid transparent;background:transparent;color:var(--li-gray);transition:all .2s;font-family:'DM Sans',sans-serif}
+.nav-tab:hover,.nav-tab.active{background:var(--li-blue);color:#fff;border-color:var(--li-blue)}
+
+.nav-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.dark-toggle{width:34px;height:34px;border-radius:50%;border:1.5px solid var(--li-gray-light);background:var(--li-bg);cursor:pointer;font-size:15px;display:flex;align-items:center;justify-content:center;transition:all .2s;color:var(--li-black)}
+.dark-toggle:hover{border-color:var(--li-blue);background:var(--li-blue);color:#fff}
+.nav-cta{background:var(--li-blue);color:#fff;font-size:12.5px;font-weight:600;padding:7px 16px;border-radius:20px;text-decoration:none;white-space:nowrap;transition:background .2s}
+.nav-cta:hover{background:var(--li-blue-dark)}
+
+/* ── TICKER ── */
+.ticker-wrap{background:var(--li-blue-dark);color:#fff;overflow:hidden;padding:7px 0;position:relative}
+[data-theme="dark"] .ticker-wrap{background:#111518}
+.ticker-track{display:flex;animation:ticker 50s linear infinite;white-space:nowrap}
+.ticker-track:hover{animation-play-state:paused}
+.ticker-item{font-size:12.5px;padding:0 28px;display:inline-flex;align-items:center;gap:7px;opacity:.9}
+.ticker-sep{opacity:.3}
+@keyframes ticker{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.pulse{display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--li-red);animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}}
+
+/* ═══════════════════════════════════════════
+   HERO
+═══════════════════════════════════════════ */
+.hero{background:var(--li-white);border-bottom:1px solid var(--li-gray-light);padding:36px 20px 28px;transition:background .3s}
+.hero-inner{max-width:1200px;margin:0 auto;display:grid;grid-template-columns:auto 1fr auto;gap:22px;align-items:center}
+.hero-avatar{width:90px;height:90px;border-radius:50%;background:linear-gradient(135deg,var(--li-blue) 0%,var(--li-blue-dark) 100%);display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:32px;color:#fff;flex-shrink:0;border:3px solid var(--li-blue-light);position:relative;overflow:hidden}
+.hero-avatar::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at 30% 30%,rgba(255,255,255,.2) 0%,transparent 60%)}
+.hero-name{font-family:'DM Serif Display',serif;font-size:26px;letter-spacing:-.4px;line-height:1.2}
+.hero-title{font-size:13px;color:var(--li-blue);font-weight:600;margin:4px 0 8px;letter-spacing:.2px}
+.hero-bio{font-size:13px;color:var(--li-gray);max-width:680px;line-height:1.65}
+.hero-badges{display:flex;gap:7px;margin-top:11px;flex-wrap:wrap}
+.badge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:600;padding:3px 9px;border-radius:5px;letter-spacing:.2px}
+.badge-blue{background:#EBF4FF;color:var(--li-blue)}
+.badge-green{background:#E6F4EE;color:var(--li-green)}
+.badge-orange{background:#FEF3E2;color:var(--li-orange)}
+.badge-red{background:#FDEAEA;color:var(--li-red)}
+[data-theme="dark"] .badge-blue{background:#1a2d40;color:var(--li-blue)}
+[data-theme="dark"] .badge-green{background:#0f2419;color:#4ade80}
+[data-theme="dark"] .badge-orange{background:#2a1a00;color:#f59e0b}
+[data-theme="dark"] .badge-red{background:#2a0a0a;color:#f87171}
+.hero-stats{display:flex;flex-direction:column;gap:10px;flex-shrink:0}
+.stat-box{background:var(--li-bg);border-radius:var(--radius-sm);padding:10px 18px;text-align:center;border:1px solid var(--li-gray-light);min-width:100px;transition:background .3s}
+.stat-num{font-family:'DM Serif Display',serif;font-size:24px;color:var(--li-blue);display:block;line-height:1}
+.stat-label{font-size:10.5px;color:var(--li-gray);font-weight:500;margin-top:2px;display:block}
+
+/* ═══════════════════════════════════════════
+   MAIN LAYOUT
+═══════════════════════════════════════════ */
+.main-wrap{max-width:1200px;margin:0 auto;padding:24px 20px;display:grid;grid-template-columns:1fr 310px;gap:22px}
+.section-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.section-title{font-family:'DM Serif Display',serif;font-size:19px;display:flex;align-items:center;gap:7px}
+.section-title .dot{width:7px;height:7px;border-radius:50%;background:var(--li-blue);display:inline-block}
+.see-all{font-size:12.5px;color:var(--li-blue);font-weight:600;text-decoration:none;cursor:pointer}
+.see-all:hover{text-decoration:underline}
+
+/* ── FEATURED ── */
+.featured-card{background:var(--li-white);border-radius:var(--radius);box-shadow:var(--card-shadow);overflow:hidden;margin-bottom:22px;transition:box-shadow .25s,transform .25s;cursor:pointer;display:block;color:inherit;text-decoration:none}
+.featured-card:hover{box-shadow:var(--card-hover);transform:translateY(-2px)}
+.featured-img{width:100%;height:210px;background:linear-gradient(135deg,#0A66C2 0%,#004182 50%,#0D9488 100%);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.featured-img::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23fff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E") repeat}
+.featured-badge{position:absolute;top:14px;left:14px;background:var(--li-red);color:#fff;font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:4px;letter-spacing:1px;text-transform:uppercase;font-family:'JetBrains Mono',monospace}
+.featured-category{position:absolute;top:14px;right:14px;background:rgba(255,255,255,.15);backdrop-filter:blur(8px);color:#fff;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px;border:1px solid rgba(255,255,255,.25)}
+.featured-hero-icon{font-size:60px;opacity:.12;position:absolute}
+.featured-title-overlay{position:absolute;bottom:0;left:0;right:0;padding:28px 18px 16px;background:linear-gradient(to top,rgba(0,0,0,.72) 0%,transparent 100%)}
+.featured-headline{font-family:'DM Serif Display',serif;font-size:19px;color:#fff;line-height:1.3;letter-spacing:-.2px}
+.featured-body{padding:18px}
+.featured-excerpt{font-size:13.5px;color:var(--li-gray);line-height:1.7;margin-bottom:14px}
+.card-meta{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:7px}
+.card-meta-left{display:flex;align-items:center;gap:10px}
+.card-date{font-size:11.5px;color:var(--li-gray-mid);font-family:'JetBrains Mono',monospace}
+.card-read{font-size:12px;color:var(--li-gray-mid)}
+.card-tags{display:flex;gap:5px;flex-wrap:wrap}
+.card-tag{font-size:11px;font-weight:600;padding:2px 8px;border-radius:4px;letter-spacing:.2px}
+.tag-ia{background:#EBF4FF;color:var(--li-blue)}
+.tag-fraude{background:#FDEAEA;color:var(--li-red)}
+.tag-pagamento{background:#E6F4EE;color:var(--li-green)}
+.tag-pix{background:#FEF3E2;color:var(--li-orange)}
+.tag-tech{background:#F0F0FF;color:#5055A5}
+.tag-regulatorio{background:#F5F0FF;color:#7C3AED}
+.tag-chargeback{background:#FFF0F5;color:#DB2777}
+[data-theme="dark"] .tag-ia{background:#1a2d40;color:var(--li-blue)}
+[data-theme="dark"] .tag-fraude{background:#2a0a0a;color:#f87171}
+[data-theme="dark"] .tag-pagamento{background:#0f2419;color:#4ade80}
+[data-theme="dark"] .tag-pix{background:#2a1a00;color:#f59e0b}
+[data-theme="dark"] .tag-tech{background:#1a1a35;color:#a5b4fc}
+[data-theme="dark"] .tag-regulatorio{background:#1f1535;color:#c4b5fd}
+[data-theme="dark"] .tag-chargeback{background:#2a0f1a;color:#f9a8d4}
+
+/* ── NEWS GRID ── */
+.news-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px}
+.news-card{background:var(--li-white);border-radius:var(--radius);box-shadow:var(--card-shadow);overflow:hidden;transition:box-shadow .25s,transform .25s;cursor:pointer;display:flex;flex-direction:column}
+.news-card:hover{box-shadow:var(--card-hover);transform:translateY(-2px)}
+.news-card-img{height:110px;display:flex;align-items:center;justify-content:center;font-size:36px}
+.nc-blue{background:linear-gradient(135deg,#EBF4FF,#C8DEF6)}
+.nc-red{background:linear-gradient(135deg,#FDEAEA,#F8C5C5)}
+.nc-green{background:linear-gradient(135deg,#E6F4EE,#BBE0CC)}
+.nc-orange{background:linear-gradient(135deg,#FEF3E2,#FDDCA8)}
+.nc-purple{background:linear-gradient(135deg,#F5F0FF,#DDD0FF)}
+.nc-teal{background:linear-gradient(135deg,#E0F7F5,#9EEAE4)}
+[data-theme="dark"] .nc-blue{background:linear-gradient(135deg,#0d1f33,#0a2d50)}
+[data-theme="dark"] .nc-red{background:linear-gradient(135deg,#2a0a0a,#400f0f)}
+[data-theme="dark"] .nc-green{background:linear-gradient(135deg,#0a1f13,#082e18)}
+[data-theme="dark"] .nc-orange{background:linear-gradient(135deg,#1f1000,#332000)}
+[data-theme="dark"] .nc-purple{background:linear-gradient(135deg,#15102a,#1e1545)}
+[data-theme="dark"] .nc-teal{background:linear-gradient(135deg,#062020,#0a2f2d)}
+.news-card-body{padding:13px 15px 15px;flex:1;display:flex;flex-direction:column}
+.nc-category{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;margin-bottom:5px}
+.nc-cat-ia{color:var(--li-blue)}
+.nc-cat-fraude{color:var(--li-red)}
+.nc-cat-pix{color:var(--li-orange)}
+.nc-cat-regulatorio{color:#7C3AED}
+.nc-cat-tech{color:#5055A5}
+.nc-cat-chargeback{color:#DB2777}
+.nc-title{font-family:'DM Serif Display',serif;font-size:14.5px;line-height:1.35;letter-spacing:-.1px;margin-bottom:7px;flex:1}
+.nc-excerpt{font-size:12px;color:var(--li-gray);line-height:1.6;margin-bottom:9px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.nc-footer{display:flex;align-items:center;justify-content:space-between;margin-top:auto}
+.nc-date{font-size:10.5px;color:var(--li-gray-mid);font-family:'JetBrains Mono',monospace}
+.nc-read-btn{font-size:11.5px;font-weight:600;color:var(--li-blue);cursor:pointer;background:none;border:none;padding:0;font-family:'DM Sans',sans-serif}
+
+/* ── LIST ── */
+.news-list{display:flex;flex-direction:column;gap:10px;margin-bottom:22px}
+.list-item{background:var(--li-white);border-radius:var(--radius-sm);box-shadow:var(--card-shadow);padding:13px 15px;display:flex;gap:12px;align-items:flex-start;cursor:pointer;transition:box-shadow .2s,transform .2s}
+.list-item:hover{box-shadow:var(--card-hover);transform:translateX(3px)}
+.list-num{font-family:'JetBrains Mono',monospace;font-size:20px;font-weight:600;color:var(--li-gray-light);flex-shrink:0;line-height:1;padding-top:2px;min-width:26px}
+.list-content{flex:1;min-width:0}
+.list-title{font-family:'DM Serif Display',serif;font-size:14.5px;line-height:1.35;margin-bottom:5px}
+.list-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.list-date{font-size:10.5px;color:var(--li-gray-mid);font-family:'JetBrains Mono',monospace}
+
+/* ═══════════════════════════════════════════
+   SIDEBAR
+═══════════════════════════════════════════ */
+.sidebar{display:flex;flex-direction:column;gap:18px}
+.sidebar-card{background:var(--li-white);border-radius:var(--radius);box-shadow:var(--card-shadow);overflow:hidden;transition:background .3s}
+.sidebar-header{padding:13px 16px;border-bottom:1px solid var(--li-gray-light);font-family:'DM Serif Display',serif;font-size:15.5px;display:flex;align-items:center;gap:7px}
+.sidebar-body{padding:13px 16px}
+.author-sidebar{display:flex;flex-direction:column;align-items:center;text-align:center;gap:9px}
+.author-avatar-sm{width:60px;height:60px;border-radius:50%;background:linear-gradient(135deg,var(--li-blue),var(--li-blue-dark));display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:20px;color:#fff;border:2px solid var(--li-blue-light)}
+.author-name-sm{font-weight:700;font-size:14.5px}
+.author-role-sm{font-size:11.5px;color:var(--li-gray);line-height:1.4}
+.author-divider{width:100%;border:none;border-top:1px solid var(--li-gray-light);margin:3px 0}
+.author-stat-row{display:flex;justify-content:space-around;width:100%;padding-top:3px}
+.author-stat{text-align:center}
+.author-stat .num{font-family:'DM Serif Display',serif;font-size:19px;color:var(--li-blue);display:block}
+.author-stat .lbl{font-size:10px;color:var(--li-gray);font-weight:500}
+.li-connect-btn{width:100%;background:var(--li-blue);color:#fff;border:none;border-radius:20px;padding:8px 0;font-size:13px;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .2s;display:flex;align-items:center;justify-content:center;gap:6px;text-decoration:none;margin-top:3px}
+.li-connect-btn:hover{background:var(--li-blue-dark)}
+.topic-pill{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:500;padding:4px 10px;border-radius:20px;background:var(--li-bg);border:1px solid var(--li-gray-light);cursor:pointer;margin:3px;transition:all .2s;text-decoration:none;color:var(--li-black)}
+.topic-pill:hover{background:var(--li-blue);color:#fff;border-color:var(--li-blue)}
+.alert-item{padding:9px 0;border-bottom:1px solid var(--li-gray-light);display:flex;gap:9px;align-items:flex-start}
+.alert-item:last-child{border-bottom:none;padding-bottom:0}
+.alert-icon{font-size:16px;flex-shrink:0}
+.alert-text{font-size:12px;color:var(--li-gray);line-height:1.5}
+.alert-text strong{color:var(--li-black);font-weight:600;display:block;margin-bottom:1px}
+.newsletter-box{background:linear-gradient(135deg,var(--li-blue) 0%,var(--li-blue-dark) 100%);border-radius:var(--radius);padding:18px;color:#fff}
+.newsletter-title{font-family:'DM Serif Display',serif;font-size:17px;margin-bottom:5px}
+.newsletter-desc{font-size:12.5px;opacity:.85;margin-bottom:12px;line-height:1.5}
+.nl-input{width:100%;border:none;border-radius:7px;padding:8px 12px;font-size:13px;font-family:'DM Sans',sans-serif;margin-bottom:7px;outline:none;background:#fff;color:#222}
+.nl-btn{width:100%;background:#fff;color:var(--li-blue);border:none;border-radius:7px;padding:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:opacity .2s}
+.nl-btn:hover{opacity:.9}
+.trend-item{padding:8px 0;border-bottom:1px solid var(--li-gray-light);display:flex;gap:9px;align-items:center;cursor:pointer}
+.trend-item:last-child{border-bottom:none}
+.trend-rank{font-family:'JetBrains Mono',monospace;font-size:13px;font-weight:600;color:var(--li-blue);min-width:22px}
+.trend-text{font-size:12.5px;font-weight:500;line-height:1.35;flex:1}
+.trend-arrow{font-size:11px;color:var(--li-green)}
+
+/* ── divider ── */
+.divider-section{border:none;border-top:1px solid var(--li-gray-light);margin:18px 0}
+
+/* ═══════════════════════════════════════════
+   COMUNIDADE / UNIVERSIDADE
+═══════════════════════════════════════════ */
+.univ-hero{background:linear-gradient(135deg,#0A66C2 0%,#004182 60%,#065F46 100%);color:#fff;padding:48px 24px;text-align:center;position:relative;overflow:hidden}
+.univ-hero::before{content:'🎓';position:absolute;font-size:200px;opacity:.06;right:-20px;top:-30px;line-height:1}
+.univ-hero-inner{max-width:700px;margin:0 auto;position:relative;z-index:1}
+.univ-hero h2{font-family:'DM Serif Display',serif;font-size:36px;margin-bottom:10px;letter-spacing:-.5px}
+.univ-hero p{font-size:15px;opacity:.88;line-height:1.7;margin-bottom:24px}
+.univ-stat-row{display:flex;justify-content:center;gap:32px;margin-bottom:24px;flex-wrap:wrap}
+.univ-stat{text-align:center}
+.univ-stat .n{font-family:'DM Serif Display',serif;font-size:32px;display:block;line-height:1}
+.univ-stat .l{font-size:12px;opacity:.8;margin-top:3px}
+.univ-btn{background:#fff;color:var(--li-blue);font-weight:700;font-size:14px;padding:11px 28px;border-radius:24px;text-decoration:none;transition:opacity .2s;display:inline-block}
+.univ-btn:hover{opacity:.9}
+.univ-content{max-width:1200px;margin:0 auto;padding:32px 20px}
+.module-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:28px}
+.module-card{background:var(--li-white);border-radius:var(--radius);box-shadow:var(--card-shadow);padding:22px;cursor:pointer;transition:box-shadow .25s,transform .25s;border:2px solid transparent}
+.module-card:hover{box-shadow:var(--card-hover);transform:translateY(-3px);border-color:var(--li-blue)}
+.module-icon{font-size:32px;margin-bottom:12px}
+.module-title{font-family:'DM Serif Display',serif;font-size:16px;margin-bottom:6px}
+.module-desc{font-size:12.5px;color:var(--li-gray);line-height:1.55;margin-bottom:12px}
+.module-meta{display:flex;align-items:center;justify-content:space-between}
+.module-level{font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:4px;text-transform:uppercase;letter-spacing:.5px}
+.lvl-intro{background:#E6F4EE;color:var(--li-green)}
+.lvl-inter{background:#EBF4FF;color:var(--li-blue)}
+.lvl-avd{background:#FDEAEA;color:var(--li-red)}
+[data-theme="dark"] .lvl-intro{background:#0a1a10;color:#4ade80}
+[data-theme="dark"] .lvl-inter{background:#0d1f33;color:var(--li-blue)}
+[data-theme="dark"] .lvl-avd{background:#2a0a0a;color:#f87171}
+.module-lessons{font-size:11px;color:var(--li-gray-mid)}
+.post-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.post-card{background:var(--li-white);border-radius:var(--radius);box-shadow:var(--card-shadow);padding:18px;cursor:pointer;transition:box-shadow .25s,transform .25s}
+.post-card:hover{box-shadow:var(--card-hover);transform:translateY(-2px)}
+.post-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--li-blue);margin-bottom:6px}
+.post-title{font-family:'DM Serif Display',serif;font-size:15px;line-height:1.35;margin-bottom:8px}
+.post-text{font-size:12.5px;color:var(--li-gray);line-height:1.6;margin-bottom:10px;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden}
+.post-footer{display:flex;align-items:center;justify-content:space-between}
+.post-likes{font-size:11.5px;color:var(--li-gray-mid)}
+.post-cta{font-size:11.5px;font-weight:600;color:var(--li-blue);cursor:pointer;background:none;border:none;font-family:'DM Sans',sans-serif}
+
+/* ═══════════════════════════════════════════
+   ARTICLE VIEW
+═══════════════════════════════════════════ */
+#view-article{background:var(--li-bg)}
+.article-wrap{max-width:1200px;margin:0 auto;padding:28px 20px;display:grid;grid-template-columns:1fr 300px;gap:24px}
+.article-main{}
+.article-back{display:inline-flex;align-items:center;gap:6px;font-size:13px;font-weight:600;color:var(--li-blue);cursor:pointer;background:none;border:none;font-family:'DM Sans',sans-serif;margin-bottom:18px;padding:0}
+.article-back:hover{text-decoration:underline}
+.article-header{background:var(--li-white);border-radius:var(--radius);box-shadow:var(--card-shadow);overflow:hidden;margin-bottom:20px}
+.article-cover{height:260px;background:linear-gradient(135deg,#0A66C2 0%,#004182 50%,#0D9488 100%);display:flex;align-items:center;justify-content:center;font-size:80px;opacity:.5;position:relative}
+.article-cover-text{position:absolute;bottom:20px;left:24px;right:24px}
+.article-cover-cat{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.7);margin-bottom:6px;font-family:'JetBrains Mono',monospace}
+.article-cover-title{font-family:'DM Serif Display',serif;font-size:26px;color:#fff;line-height:1.25;letter-spacing:-.4px}
+.article-meta-bar{padding:16px 24px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;border-bottom:1px solid var(--li-gray-light)}
+.article-author{display:flex;align-items:center;gap:9px}
+.article-author-av{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--li-blue),var(--li-blue-dark));display:flex;align-items:center;justify-content:center;font-family:'DM Serif Display',serif;font-size:13px;color:#fff;flex-shrink:0}
+.article-author-info .name{font-size:13px;font-weight:700}
+.article-author-info .date{font-size:11.5px;color:var(--li-gray-mid);font-family:'JetBrains Mono',monospace}
+.article-tags-bar{display:flex;gap:6px;flex-wrap:wrap;padding:12px 24px}
+.article-body{background:var(--li-white);border-radius:var(--radius);box-shadow:var(--card-shadow);padding:28px 32px}
+.article-body h2{font-family:'DM Serif Display',serif;font-size:22px;margin:28px 0 12px;letter-spacing:-.3px;padding-bottom:8px;border-bottom:2px solid var(--li-gray-light)}
+.article-body h2:first-child{margin-top:0}
+.article-body h3{font-family:'DM Serif Display',serif;font-size:18px;margin:20px 0 10px;color:var(--li-blue)}
+.article-body p{font-size:15px;line-height:1.8;margin-bottom:16px;color:var(--li-black)}
+.article-body ul,.article-body ol{padding-left:22px;margin-bottom:16px}
+.article-body li{font-size:14.5px;line-height:1.75;margin-bottom:5px;color:var(--li-black)}
+.article-body blockquote{border-left:4px solid var(--li-blue);padding:12px 18px;background:var(--li-bg);border-radius:0 8px 8px 0;margin:20px 0;font-style:italic;color:var(--li-gray)}
+.article-body .callout{background:linear-gradient(135deg,#EBF4FF,#D5E9F8);border:1px solid #C0D8F0;border-radius:var(--radius-sm);padding:14px 18px;margin:20px 0}
+[data-theme="dark"] .article-body .callout{background:linear-gradient(135deg,#0d1f33,#0a2540);border-color:#1a3a5c}
+.article-body .callout strong{color:var(--li-blue);display:block;margin-bottom:4px}
+.article-body .callout p{margin-bottom:0;font-size:13.5px}
+.ai-generating{display:flex;align-items:center;gap:10px;color:var(--li-gray);font-size:13.5px;padding:16px;background:var(--li-bg);border-radius:var(--radius-sm);margin-bottom:16px}
+.ai-dots{display:flex;gap:4px}
+.ai-dot{width:6px;height:6px;border-radius:50%;background:var(--li-blue);animation:bounce .8s infinite}
+.ai-dot:nth-child(2){animation-delay:.15s}
+.ai-dot:nth-child(3){animation-delay:.3s}
+@keyframes bounce{0%,80%,100%{transform:scale(0.8);opacity:.5}40%{transform:scale(1.2);opacity:1}}
+.ai-label{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--li-blue);background:#EBF4FF;padding:2px 8px;border-radius:4px;margin-bottom:12px;display:inline-block}
+[data-theme="dark"] .ai-label{background:#0d1f33}
+.article-actions{display:flex;gap:10px;margin-top:24px;flex-wrap:wrap}
+.action-btn{display:flex;align-items:center;gap:6px;padding:8px 16px;border-radius:20px;border:1.5px solid var(--li-gray-light);background:var(--li-bg);cursor:pointer;font-size:13px;font-weight:600;color:var(--li-black);font-family:'DM Sans',sans-serif;transition:all .2s}
+.action-btn:hover{border-color:var(--li-blue);color:var(--li-blue);background:var(--li-white)}
+.action-btn.primary{background:var(--li-blue);color:#fff;border-color:var(--li-blue)}
+.action-btn.primary:hover{background:var(--li-blue-dark)}
+
+/* article sidebar */
+.article-sidebar{display:flex;flex-direction:column;gap:18px}
+.related-item{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--li-gray-light);cursor:pointer}
+.related-item:last-child{border-bottom:none}
+.related-item:hover .related-title{color:var(--li-blue)}
+.related-icon{font-size:22px;flex-shrink:0}
+.related-title{font-size:13px;font-weight:600;line-height:1.35;margin-bottom:3px;transition:color .2s}
+.related-date{font-size:10.5px;color:var(--li-gray-mid);font-family:'JetBrains Mono',monospace}
+.ai-ask-box{background:linear-gradient(135deg,var(--li-blue),var(--li-blue-dark));border-radius:var(--radius);padding:18px;color:#fff}
+.ai-ask-title{font-family:'DM Serif Display',serif;font-size:16px;margin-bottom:6px}
+.ai-ask-desc{font-size:12.5px;opacity:.85;margin-bottom:12px;line-height:1.5}
+.ai-ask-input{width:100%;border:none;border-radius:7px;padding:8px 12px;font-size:13px;font-family:'DM Sans',sans-serif;margin-bottom:7px;outline:none;background:#fff;color:#222;resize:none;min-height:60px}
+.ai-ask-btn{width:100%;background:#fff;color:var(--li-blue);border:none;border-radius:7px;padding:8px;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif}
+.ai-response-box{background:var(--li-bg);border-radius:var(--radius-sm);padding:12px;font-size:13px;color:var(--li-black);line-height:1.6;margin-top:8px;border:1px solid var(--li-gray-light);min-height:40px}
+
+/* ── AI GENERATOR ── */
+.ai-section{background:var(--li-white);border-radius:var(--radius);box-shadow:var(--card-shadow);padding:24px;margin-bottom:22px}
+.ai-section-title{font-family:'DM Serif Display',serif;font-size:18px;margin-bottom:4px;display:flex;align-items:center;gap:8px}
+.ai-section-desc{font-size:13px;color:var(--li-gray);margin-bottom:18px}
+.ai-gen-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px}
+.ai-gen-field{display:flex;flex-direction:column;gap:5px}
+.ai-gen-field label{font-size:12px;font-weight:600;color:var(--li-gray);text-transform:uppercase;letter-spacing:.4px}
+.ai-gen-field select,.ai-gen-field input{border:1.5px solid var(--li-gray-light);border-radius:var(--radius-sm);padding:8px 12px;font-size:13px;font-family:'DM Sans',sans-serif;background:var(--li-bg);color:var(--li-black);outline:none;transition:border-color .2s}
+.ai-gen-field select:focus,.ai-gen-field input:focus{border-color:var(--li-blue)}
+.ai-gen-btn{background:var(--li-blue);color:#fff;border:none;border-radius:20px;padding:10px 24px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;display:flex;align-items:center;gap:8px;transition:background .2s}
+.ai-gen-btn:hover{background:var(--li-blue-dark)}
+.ai-gen-btn:disabled{opacity:.6;cursor:wait}
+.ai-output{background:var(--li-bg);border-radius:var(--radius-sm);padding:18px;border:1px solid var(--li-gray-light);min-height:80px;font-size:14px;line-height:1.75;color:var(--li-black);margin-top:16px}
+.ai-output h3{font-family:'DM Serif Display',serif;font-size:18px;margin-bottom:10px;color:var(--li-blue)}
+.ai-output p{margin-bottom:12px}
+.ai-output ul{padding-left:18px;margin-bottom:12px}
+.ai-output li{margin-bottom:5px}
+
+/* ═══════════════════════════════════════════
+   SEARCH RESULTS
+═══════════════════════════════════════════ */
+.search-page{max-width:1200px;margin:0 auto;padding:28px 20px}
+.search-page h2{font-family:'DM Serif Display',serif;font-size:24px;margin-bottom:6px}
+.search-page .query-text{color:var(--li-blue)}
+.search-count{font-size:13px;color:var(--li-gray);margin-bottom:22px}
+.search-list{display:flex;flex-direction:column;gap:12px}
+.search-card{background:var(--li-white);border-radius:var(--radius);box-shadow:var(--card-shadow);padding:18px 20px;cursor:pointer;transition:box-shadow .2s,transform .2s;display:flex;gap:16px;align-items:flex-start}
+.search-card:hover{box-shadow:var(--card-hover);transform:translateX(3px)}
+.search-card-icon{font-size:28px;flex-shrink:0}
+.search-card-body{}
+.search-card-cat{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--li-blue);margin-bottom:4px}
+.search-card-title{font-family:'DM Serif Display',serif;font-size:17px;margin-bottom:6px;line-height:1.3}
+.search-card-excerpt{font-size:13px;color:var(--li-gray);line-height:1.6}
+.search-card-date{font-size:11px;color:var(--li-gray-mid);font-family:'JetBrains Mono',monospace;margin-top:6px}
+.no-results{text-align:center;padding:48px 24px;color:var(--li-gray)}
+.no-results .icon{font-size:48px;margin-bottom:12px}
+.no-results p{font-size:15px}
+
+/* ═══════════════════════════════════════════
+   FOOTER
+═══════════════════════════════════════════ */
+footer{background:var(--li-white);border-top:1px solid var(--li-gray-light);padding:28px 20px;margin-top:16px;transition:background .3s}
+.footer-inner{max-width:1200px;margin:0 auto;display:flex;flex-direction:column;align-items:center;gap:14px;text-align:center}
+.footer-logo{font-family:'DM Serif Display',serif;font-size:20px}
+.footer-logo span{color:var(--li-blue)}
+.footer-links{display:flex;gap:18px;flex-wrap:wrap;justify-content:center}
+.footer-link{font-size:12px;color:var(--li-gray);text-decoration:none;font-weight:500}
+.footer-link:hover{color:var(--li-blue)}
+.footer-copy{font-size:11.5px;color:var(--li-gray-mid)}
+
+/* ═══════════════════════════════════════════
+   ANIMATIONS
+═══════════════════════════════════════════ */
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.featured-card{animation:fadeUp .45s ease both}
+.news-card:nth-child(1){animation:fadeUp .45s .05s ease both}
+.news-card:nth-child(2){animation:fadeUp .45s .1s ease both}
+.news-card:nth-child(3){animation:fadeUp .45s .15s ease both}
+.news-card:nth-child(4){animation:fadeUp .45s .2s ease both}
+.news-card:nth-child(5){animation:fadeUp .45s .25s ease both}
+.news-card:nth-child(6){animation:fadeUp .45s .3s ease both}
+
+/* ═══════════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════════ */
+@media(max-width:960px){
+  .hero-inner{grid-template-columns:auto 1fr;grid-template-rows:auto auto}
+  .hero-stats{flex-direction:row;grid-column:1/-1}
+  .main-wrap,.article-wrap{grid-template-columns:1fr}
+  .sidebar,.article-sidebar{display:grid;grid-template-columns:1fr 1fr}
+  .module-grid{grid-template-columns:1fr 1fr}
+  .post-grid{grid-template-columns:1fr}
+}
+@media(max-width:640px){
+  .nav-tabs{display:none}
+  .news-grid,.ai-gen-grid{grid-template-columns:1fr}
+  .sidebar,.article-sidebar{grid-template-columns:1fr}
+  .module-grid{grid-template-columns:1fr}
+  .univ-stat-row{gap:20px}
+  .univ-hero h2{font-size:26px}
+  .hero-stats{flex-direction:column}
+}
+</style>
+</head>
+<body>
+
+<!-- ════════════════════════ NAV ════════════════════════ -->
+<nav id="main-nav">
+  <div class="nav-inner">
+    <div class="nav-logo" onclick="navigate('home')">
+      <div class="logo-icon">
+        <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm-1 14l-3-3 1.41-1.41L11 12.17l4.59-4.58L17 9l-6 6z"/></svg>
+      </div>
+      <span class="logo-text">AntiFraude<span>Hub</span></span>
+    </div>
+
+    <div class="nav-search">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="globalSearch" placeholder="Buscar artigos, temas…" oninput="handleSearchInput(this.value)" onkeydown="handleSearchKey(event)">
+      <div class="search-results-drop" id="searchDrop"></div>
+    </div>
+
+    <div class="nav-tabs">
+      <button class="nav-tab active" onclick="switchTab(this,'home')">Feed</button>
+      <button class="nav-tab" onclick="switchTab(this,'univ')">Universidade</button>
+      <button class="nav-tab" onclick="switchTab(this,'ai-gen')">IA Generator</button>
+    </div>
+
+    <div class="nav-right">
+      <button class="dark-toggle" id="darkToggle" onclick="toggleDark()" title="Modo escuro">🌙</button>
+      <a href="https://www.linkedin.com/in/andrew-barros-43165984/" target="_blank" class="nav-cta">📎 LinkedIn</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ════════════════════════ TICKER ════════════════════════ -->
+<div class="ticker-wrap">
+  <div class="ticker-track">
+    <span class="ticker-item"><span class="pulse"></span>ALERTA: Deepfakes em pagamentos B2B crescem 340% em 2024<span class="ticker-sep">|</span></span>
+    <span class="ticker-item">🔴 Bacen publica nova resolução sobre prevenção a fraudes no Pix — Resolução nº 1/2025<span class="ticker-sep">|</span></span>
+    <span class="ticker-item">📊 Brasil registra R$ 2,5 bilhões em chargebacks no 1º trimestre de 2025<span class="ticker-sep">|</span></span>
+    <span class="ticker-item">🤖 IA generativa replica biometria de voz com 94% de precisão<span class="ticker-sep">|</span></span>
+    <span class="ticker-item">⚠️ MRC São Paulo 2025: Andrew Barros entre os palestrantes confirmados<span class="ticker-sep">|</span></span>
+    <span class="ticker-item">🎓 Universidade de Pagamento no LinkedIn já conecta milhares de profissionais<span class="ticker-sep">|</span></span>
+    <span class="ticker-item">📱 Golpe do Pix falso evolui com QR codes dinâmicos e sites clonados<span class="ticker-sep">|</span></span>
+    <span class="ticker-item"><span class="pulse"></span>ALERTA: Deepfakes em pagamentos B2B crescem 340% em 2024<span class="ticker-sep">|</span></span>
+    <span class="ticker-item">🔴 Bacen publica nova resolução sobre prevenção a fraudes no Pix — Resolução nº 1/2025<span class="ticker-sep">|</span></span>
+    <span class="ticker-item">📊 Brasil registra R$ 2,5 bilhões em chargebacks no 1º trimestre de 2025<span class="ticker-sep">|</span></span>
+    <span class="ticker-item">🤖 IA generativa replica biometria de voz com 94% de precisão<span class="ticker-sep">|</span></span>
+    <span class="ticker-item">⚠️ MRC São Paulo 2025: Andrew Barros entre os palestrantes confirmados<span class="ticker-sep">|</span></span>
+    <span class="ticker-item">🎓 Universidade de Pagamento no LinkedIn já conecta milhares de profissionais<span class="ticker-sep">|</span></span>
+    <span class="ticker-item">📱 Golpe do Pix falso evolui com QR codes dinâmicos e sites clonados<span class="ticker-sep">|</span></span>
+  </div>
+</div>
+
+<!-- ════════════════════════ HERO ════════════════════════ -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-avatar">AB</div>
+    <div class="hero-info">
+      <h1 class="hero-name">Andrew Barros</h1>
+      <p class="hero-title">Gerente Executivo de Autorização &amp; Prevenção a Fraudes · Cartão Elo | Co-autor "Introdução aos Meios de Pagamento"</p>
+      <p class="hero-bio">Com mais de 12 anos de experiência em Operações, Risco, Prevenção a Fraudes, Compliance e Pagamentos Digitais, sou apaixonado por construir ecossistemas mais seguros no Brasil. Fundador da página <strong>Universidade de Pagamento</strong> no LinkedIn, palestrante no MRC São Paulo, responsável por equipes de mais de 100 profissionais e por estratégias antifraude que protegem milhões de transações mensalmente. Aqui, compartilho análises, tendências e tudo que importa sobre o futuro dos meios de pagamento e a guerra contra a fraude.</p>
+      <div class="hero-badges">
+        <span class="badge badge-blue">🔒 Prevenção a Fraude</span>
+        <span class="badge badge-green">💳 Meios de Pagamento</span>
+        <span class="badge badge-orange">🤖 IA Aplicada</span>
+        <span class="badge badge-red">🎓 Universidade de Pagamento</span>
+        <span class="badge badge-blue">📚 Co-autor</span>
+        <span class="badge badge-green">🏦 Cartão Elo</span>
+      </div>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-box"><span class="stat-num">12+</span><span class="stat-label">Anos de experiência</span></div>
+      <div class="stat-box"><span class="stat-num">1</span><span class="stat-label">Livro publicado</span></div>
+      <div class="stat-box"><span class="stat-num">100+</span><span class="stat-label">Profissionais na equipe</span></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════ VIEW: HOME ════════════════════ -->
+<div id="view-home" class="view active">
+  <div class="main-wrap">
+    <!-- LEFT -->
+    <div>
+      <div class="section-header">
+        <h2 class="section-title"><span class="dot"></span> Destaque da Semana</h2>
+        <a class="see-all" href="#">Ver todos →</a>
+      </div>
+
+      <div class="featured-card" onclick="openArticle('ai-deepfake')">
+        <div class="featured-img">
+          <span class="featured-hero-icon">🤖</span>
+          <span class="featured-badge">🔴 DESTAQUE</span>
+          <span class="featured-category">IA &amp; Fraude</span>
+          <div class="featured-title-overlay">
+            <h2 class="featured-headline">IA Generativa e Deepfakes: A Nova Fronteira da Fraude em Meios de Pagamento no Brasil</h2>
+          </div>
+        </div>
+        <div class="featured-body">
+          <p class="featured-excerpt">A rápida evolução da Inteligência Artificial generativa abriu um novo capítulo na história da fraude financeira. Fraudadores já utilizam vozes sintéticas para enganar sistemas de autenticação biométrica e clonam identidades em tempo real. Como as instituições financeiras brasileiras estão respondendo a essa ameaça — e o que ainda precisa mudar.</p>
+          <div class="card-meta">
+            <div class="card-meta-left"><span class="card-date">09 ABR 2025</span><span class="card-read">⏱ 8 min</span></div>
+            <div class="card-tags"><span class="card-tag tag-ia">IA</span><span class="card-tag tag-fraude">Fraude</span><span class="card-tag tag-pagamento">Pagamentos</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="section-header">
+        <h2 class="section-title"><span class="dot"></span> Últimas Notícias</h2>
+        <a class="see-all" href="#">Ver arquivo →</a>
+      </div>
+
+      <div class="news-grid">
+        <div class="news-card" onclick="openArticle('pix-golpe')">
+          <div class="news-card-img nc-orange">🎯</div>
+          <div class="news-card-body">
+            <div class="nc-category nc-cat-pix">Pix · Golpes</div>
+            <h3 class="nc-title">Golpe do Pix Agendado: Como Criminosos Exploram Falhas de Confirmação</h3>
+            <p class="nc-excerpt">Engenharia social combinada com urgência artificial: entenda o mecanismo e como prevenir em larga escala.</p>
+            <div class="nc-footer"><span class="nc-date">07 ABR 2025</span><button class="nc-read-btn">Ler mais →</button></div>
+          </div>
+        </div>
+        <div class="news-card" onclick="openArticle('bacen-app')">
+          <div class="news-card-img nc-blue">🏛️</div>
+          <div class="news-card-body">
+            <div class="nc-category nc-cat-regulatorio">Regulatório · Bacen</div>
+            <h3 class="nc-title">Bacen Reforça Responsabilidade das IFs em Fraudes APP</h3>
+            <p class="nc-excerpt">Nova diretriz sobre Authorized Push Payment fraud transfere mais responsabilidade para bancos remetentes e recebedores.</p>
+            <div class="nc-footer"><span class="nc-date">05 ABR 2025</span><button class="nc-read-btn">Ler mais →</button></div>
+          </div>
+        </div>
+        <div class="news-card" onclick="openArticle('ml-score')">
+          <div class="news-card-img nc-purple">🧠</div>
+          <div class="news-card-body">
+            <div class="nc-category nc-cat-ia">IA · Machine Learning</div>
+            <h3 class="nc-title">Score de Risco em Tempo Real: Como o ML Está Redefinindo a Autorização</h3>
+            <p class="nc-excerpt">Modelos de ML detectam fraude com latência abaixo de 100ms. Análise técnica e cases reais do mercado brasileiro.</p>
+            <div class="nc-footer"><span class="nc-date">03 ABR 2025</span><button class="nc-read-btn">Ler mais →</button></div>
+          </div>
+        </div>
+        <div class="news-card" onclick="openArticle('chargeback-2025')">
+          <div class="news-card-img nc-red">💳</div>
+          <div class="news-card-body">
+            <div class="nc-category nc-cat-chargeback">Chargeback · Disputes</div>
+            <h3 class="nc-title">Chargeback Essentials: O Que Todo Profissional Precisa Saber em 2025</h3>
+            <p class="nc-excerpt">Guia atualizado com as regras das bandeiras Visa, Mastercard e Elo para gestão de disputas e recuperação de receita.</p>
+            <div class="nc-footer"><span class="nc-date">01 ABR 2025</span><button class="nc-read-btn">Ler mais →</button></div>
+          </div>
+        </div>
+        <div class="news-card" onclick="openArticle('3ds-resultados')">
+          <div class="news-card-img nc-teal">🔐</div>
+          <div class="news-card-body">
+            <div class="nc-category nc-cat-tech">3DS · Autenticação</div>
+            <h3 class="nc-title">3DS 2.0 na Prática: Resultados, Conversão e Impacto na Fraude CNP</h3>
+            <p class="nc-excerpt">Os números mostram queda expressiva na fraude em e-commerce após a adoção do protocolo pelo Cartão Elo e parceiros.</p>
+            <div class="nc-footer"><span class="nc-date">29 MAR 2025</span><button class="nc-read-btn">Ler mais →</button></div>
+          </div>
+        </div>
+        <div class="news-card" onclick="openArticle('mrc-sp-2025')">
+          <div class="news-card-img nc-green">🌍</div>
+          <div class="news-card-body">
+            <div class="nc-category nc-cat-regulatorio">MRC · Eventos</div>
+            <h3 class="nc-title">MRC São Paulo 2025: Os 5 Temas Mais Quentes de Prevenção a Fraude</h3>
+            <p class="nc-excerpt">Cobertura completa: IA, identidade sintética, fraude de afiliados e as tendências globais chegando ao Brasil.</p>
+            <div class="nc-footer"><span class="nc-date">26 MAR 2025</span><button class="nc-read-btn">Ler mais →</button></div>
+          </div>
+        </div>
+      </div>
+
+      <hr class="divider-section">
+      <div class="section-header">
+        <h2 class="section-title"><span class="dot"></span> Análises &amp; Opinião</h2>
+        <a class="see-all" href="#">Ver mais →</a>
+      </div>
+      <div class="news-list">
+        <div class="list-item" onclick="openArticle('sint-identity')">
+          <span class="list-num">01</span>
+          <div class="list-content">
+            <h3 class="list-title">Identidade Sintética: O Tipo de Fraude Que Cresce em Silêncio nos Portfólios de Crédito</h3>
+            <div class="list-meta"><span class="list-date">24 MAR 2025</span><span class="card-tag tag-ia">IA</span><span class="card-tag tag-fraude">Fraude</span><span class="card-read">6 min</span></div>
+          </div>
+        </div>
+        <div class="list-item" onclick="openArticle('pf-risk')">
+          <span class="list-num">02</span>
+          <div class="list-content">
+            <h3 class="list-title">Payment Facilitator: Gestão de Risco, Boarding e Conformidade PCI em Detalhes</h3>
+            <div class="list-meta"><span class="list-date">20 MAR 2025</span><span class="card-tag tag-pagamento">Pagamentos</span><span class="card-tag tag-regulatorio">Regulatório</span><span class="card-read">10 min</span></div>
+          </div>
+        </div>
+        <div class="list-item" onclick="openArticle('univ-pagamento')">
+          <span class="list-num">03</span>
+          <div class="list-content">
+            <h3 class="list-title">Universidade de Pagamento: Por Que Criamos Este Espaço de Conhecimento no LinkedIn</h3>
+            <div class="list-meta"><span class="list-date">15 MAR 2025</span><span class="card-tag tag-pagamento">Pagamentos</span><span class="card-tag tag-tech">Comunidade</span><span class="card-read">5 min</span></div>
+          </div>
+        </div>
+        <div class="list-item" onclick="openArticle('kpi-dashboard')">
+          <span class="list-num">04</span>
+          <div class="list-content">
+            <h3 class="list-title">Data-Driven Fraud Prevention: Como Construir KPIs e Dashboards que Realmente Funcionam</h3>
+            <div class="list-meta"><span class="list-date">10 MAR 2025</span><span class="card-tag tag-ia">Dados</span><span class="card-tag tag-pagamento">Pagamentos</span><span class="card-read">8 min</span></div>
+          </div>
+        </div>
+        <div class="list-item" onclick="openArticle('lgpd-antifraude')">
+          <span class="list-num">05</span>
+          <div class="list-content">
+            <h3 class="list-title">LGPD e Antifraude: O Desafio de Proteger Dados e Combater Golpes ao Mesmo Tempo</h3>
+            <div class="list-meta"><span class="list-date">05 MAR 2025</span><span class="card-tag tag-regulatorio">LGPD</span><span class="card-tag tag-fraude">Compliance</span><span class="card-read">7 min</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-card">
+        <div class="sidebar-header"><span>👤</span> Sobre o Autor</div>
+        <div class="sidebar-body">
+          <div class="author-sidebar">
+            <div class="author-avatar-sm">AB</div>
+            <div class="author-name-sm">Andrew Barros</div>
+            <div class="author-role-sm">Gerente Executivo Autorização &amp; Fraudes · Cartão Elo<br>Fundador · Universidade de Pagamento (LinkedIn)</div>
+            <hr class="author-divider">
+            <div class="author-stat-row">
+              <div class="author-stat"><span class="num">12+</span><span class="lbl">Anos</span></div>
+              <div class="author-stat"><span class="num">1</span><span class="lbl">Livro</span></div>
+              <div class="author-stat"><span class="num">MRC</span><span class="lbl">Palestrante</span></div>
+            </div>
+            <a href="https://www.linkedin.com/in/andrew-barros-43165984/" target="_blank" class="li-connect-btn">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+              Conectar no LinkedIn
+            </a>
+          </div>
+        </div>
+      </div>
+      <div class="sidebar-card">
+        <div class="sidebar-header"><span>📈</span> Em Alta</div>
+        <div class="sidebar-body" style="padding-top:6px;padding-bottom:6px">
+          <div class="trend-item"><span class="trend-rank">#1</span><span class="trend-text">Deepfake de voz para fraude B2B</span><span class="trend-arrow">↑</span></div>
+          <div class="trend-item"><span class="trend-rank">#2</span><span class="trend-text">Responsabilidade nos golpes APP</span><span class="trend-arrow">↑</span></div>
+          <div class="trend-item"><span class="trend-rank">#3</span><span class="trend-text">Fraude em Pix — Open Finance</span><span class="trend-arrow">→</span></div>
+          <div class="trend-item"><span class="trend-rank">#4</span><span class="trend-text">Identidade sintética no crédito</span><span class="trend-arrow">↑</span></div>
+          <div class="trend-item"><span class="trend-rank">#5</span><span class="trend-text">PCI DSS v4.0 — o que muda</span><span class="trend-arrow">→</span></div>
+        </div>
+      </div>
+      <div class="sidebar-card">
+        <div class="sidebar-header"><span>🏷️</span> Temas</div>
+        <div class="sidebar-body" style="margin:-3px">
+          <a class="topic-pill" href="#">🤖 Inteligência Artificial</a>
+          <a class="topic-pill" href="#">💳 Meios de Pagamento</a>
+          <a class="topic-pill" href="#">📱 Pix</a>
+          <a class="topic-pill" href="#">🔄 Chargeback</a>
+          <a class="topic-pill" href="#">🏛️ BACEN</a>
+          <a class="topic-pill" href="#">🔐 3DS 2.0</a>
+          <a class="topic-pill" href="#">🛡️ PCI DSS</a>
+          <a class="topic-pill" href="#">👁️ KYC/AML</a>
+          <a class="topic-pill" href="#">📊 Data-Driven</a>
+          <a class="topic-pill" href="#">🤝 MRC</a>
+          <a class="topic-pill" href="#">🌐 Open Finance</a>
+          <a class="topic-pill" href="#">⚖️ LGPD</a>
+        </div>
+      </div>
+      <div class="sidebar-card">
+        <div class="sidebar-header"><span>⚠️</span> Alertas</div>
+        <div class="sidebar-body" style="padding-top:6px;padding-bottom:6px">
+          <div class="alert-item"><span class="alert-icon">🔴</span><div class="alert-text"><strong>Phishing bancário com IA</strong>E-mails gerados por LLMs imitam comunicações bancárias com 98% de fidelidade visual.</div></div>
+          <div class="alert-item"><span class="alert-icon">🟠</span><div class="alert-text"><strong>Fraude de afiliados e-commerce</strong>Retorno do estorno combinado com contas laranjas abertas via API.</div></div>
+          <div class="alert-item"><span class="alert-icon">🟡</span><div class="alert-text"><strong>Golpe do motoboy — nova variante</strong>Exploração de confirmação de cartão por NFC em versão atualizada.</div></div>
+        </div>
+      </div>
+      <div class="newsletter-box">
+        <h3 class="newsletter-title">📬 Fique por dentro</h3>
+        <p class="newsletter-desc">Análises semanais sobre fraude, pagamentos e IA direto no seu e-mail.</p>
+        <input class="nl-input" type="email" placeholder="seu@email.com">
+        <button class="nl-btn">Quero receber →</button>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<!-- ════════════════════ VIEW: ARTICLE ════════════════════ -->
+<div id="view-article" class="view">
+  <div class="article-wrap">
+    <div class="article-main">
+      <button class="article-back" onclick="navigate('home')">← Voltar ao Feed</button>
+      <div class="article-header">
+        <div class="article-cover" id="artCover"><span id="artCoverEmoji" style="position:absolute;font-size:80px;opacity:.18">🤖</span>
+          <div class="article-cover-text">
+            <div class="article-cover-cat" id="artCoverCat">IA & FRAUDE</div>
+            <h1 class="article-cover-title" id="artTitle">Carregando...</h1>
+          </div>
+        </div>
+        <div class="article-meta-bar">
+          <div class="article-author">
+            <div class="article-author-av">AB</div>
+            <div class="article-author-info">
+              <div class="name">Andrew Barros</div>
+              <div class="date" id="artDate">09 ABR 2025 · 8 min de leitura</div>
+            </div>
+          </div>
+        </div>
+        <div class="article-tags-bar" id="artTags"></div>
+      </div>
+
+      <div class="article-body" id="artBody">
+        <div class="ai-generating"><div class="ai-dots"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div> Gerando artigo com IA…</div>
+      </div>
+
+      <div class="article-actions">
+        <button class="action-btn primary">👍 Curtir</button>
+        <button class="action-btn">💬 Comentar</button>
+        <button class="action-btn">🔗 Compartilhar</button>
+        <button class="action-btn">🔖 Salvar</button>
+      </div>
+    </div>
+
+    <aside class="article-sidebar">
+      <div class="sidebar-card">
+        <div class="sidebar-header"><span>📖</span> Leia também</div>
+        <div class="sidebar-body" style="padding-top:4px;padding-bottom:4px">
+          <div class="related-item" onclick="openArticle('pix-golpe')"><span class="related-icon">🎯</span><div><div class="related-title">Golpe do Pix Agendado</div><div class="related-date">07 ABR 2025</div></div></div>
+          <div class="related-item" onclick="openArticle('bacen-app')"><span class="related-icon">🏛️</span><div><div class="related-title">Bacen e Fraudes APP</div><div class="related-date">05 ABR 2025</div></div></div>
+          <div class="related-item" onclick="openArticle('chargeback-2025')"><span class="related-icon">💳</span><div><div class="related-title">Chargeback Essentials 2025</div><div class="related-date">01 ABR 2025</div></div></div>
+          <div class="related-item" onclick="openArticle('sint-identity')"><span class="related-icon">🧬</span><div><div class="related-title">Identidade Sintética</div><div class="related-date">24 MAR 2025</div></div></div>
+          <div class="related-item" onclick="openArticle('kpi-dashboard')"><span class="related-icon">📊</span><div><div class="related-title">KPIs Data-Driven</div><div class="related-date">10 MAR 2025</div></div></div>
+        </div>
+      </div>
+      <div class="ai-ask-box">
+        <div class="ai-ask-title">🤖 Pergunte ao assistente</div>
+        <p class="ai-ask-desc">Tire dúvidas sobre o conteúdo deste artigo com IA.</p>
+        <textarea class="ai-ask-input" id="askInput" placeholder="Ex: Como proteger minha empresa de deepfakes de voz?"></textarea>
+        <button class="ai-ask-btn" onclick="askAboutArticle()">Perguntar →</button>
+        <div class="ai-response-box" id="askResponse" style="display:none"></div>
+      </div>
+      <div class="sidebar-card">
+        <div class="sidebar-header"><span>👤</span> Autor</div>
+        <div class="sidebar-body">
+          <div class="author-sidebar">
+            <div class="author-avatar-sm">AB</div>
+            <div class="author-name-sm">Andrew Barros</div>
+            <div class="author-role-sm">Gerente Executivo de Autorização &amp; Prevenção a Fraudes</div>
+            <a href="https://www.linkedin.com/in/andrew-barros-43165984/" target="_blank" class="li-connect-btn" style="margin-top:6px">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="white"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+              Seguir no LinkedIn
+            </a>
+          </div>
+        </div>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<!-- ════════════════════ VIEW: UNIVERSIDADE ════════════════════ -->
+<div id="view-univ" class="view">
+  <div class="univ-hero">
+    <div class="univ-hero-inner">
+      <h2>🎓 Universidade de Pagamento</h2>
+      <p>A página de conteúdo educacional sobre Meios de Pagamento fundada por Andrew Barros no LinkedIn. Conhecimento prático, acessível e atualizado para todos os profissionais do ecossistema de pagamentos brasileiro.</p>
+      <div class="univ-stat-row">
+        <div class="univ-stat"><span class="n">+5k</span><span class="l">Seguidores</span></div>
+        <div class="univ-stat"><span class="n">100+</span><span class="l">Publicações</span></div>
+        <div class="univ-stat"><span class="n">12+</span><span class="l">Temas cobertos</span></div>
+        <div class="univ-stat"><span class="n">🇧🇷</span><span class="l">Brasil</span></div>
+      </div>
+      <a href="https://www.linkedin.com/company/universidade-de-pagamento/" target="_blank" class="univ-btn">Seguir no LinkedIn →</a>
+    </div>
+  </div>
+
+  <div class="univ-content">
+    <div class="section-header">
+      <h2 class="section-title"><span class="dot"></span> Módulos de Aprendizado</h2>
+      <a class="see-all" href="#">Ver todos →</a>
+    </div>
+    <div class="module-grid">
+      <div class="module-card" onclick="openArticle('intro-pagamentos')">
+        <div class="module-icon">💳</div>
+        <h3 class="module-title">Fundamentos dos Meios de Pagamento</h3>
+        <p class="module-desc">Entenda a cadeia completa: emissor, bandeira, adquirente, gateway e subadquirente. Como o dinheiro se move em cada transação.</p>
+        <div class="module-meta"><span class="module-level lvl-intro">Introdutório</span><span class="module-lessons">8 aulas</span></div>
+      </div>
+      <div class="module-card" onclick="openArticle('fraude-101')">
+        <div class="module-icon">🔒</div>
+        <h3 class="module-title">Prevenção a Fraude — Do Zero ao Avançado</h3>
+        <p class="module-desc">Tipos de fraude, métricas, modelos de score, regras comportamentais e como estruturar uma área antifraude eficiente.</p>
+        <div class="module-meta"><span class="module-level lvl-inter">Intermediário</span><span class="module-lessons">12 aulas</span></div>
+      </div>
+      <div class="module-card" onclick="openArticle('chargeback-2025')">
+        <div class="module-icon">🔄</div>
+        <h3 class="module-title">Chargeback e Gestão de Disputas</h3>
+        <p class="module-desc">Regras das bandeiras, prazos, representação de disputas, métricas de controle e estratégias para reduzir ratio de chargeback.</p>
+        <div class="module-meta"><span class="module-level lvl-inter">Intermediário</span><span class="module-lessons">9 aulas</span></div>
+      </div>
+      <div class="module-card" onclick="openArticle('pf-risk')">
+        <div class="module-icon">🏢</div>
+        <h3 class="module-title">Payment Facilitator e Sub-Adquirência</h3>
+        <p class="module-desc">Regras do Bacen, PCI DSS, boarding de estabelecimentos, exposição financeira e compliance para fintechs e PSPs.</p>
+        <div class="module-meta"><span class="module-level lvl-avd">Avançado</span><span class="module-lessons">10 aulas</span></div>
+      </div>
+      <div class="module-card" onclick="openArticle('ai-deepfake')">
+        <div class="module-icon">🤖</div>
+        <h3 class="module-title">IA e Machine Learning em Antifraude</h3>
+        <p class="module-desc">Modelos de ML para score de risco, detecção de anomalias, NLP para análise de comportamento e IA generativa como ameaça.</p>
+        <div class="module-meta"><span class="module-level lvl-avd">Avançado</span><span class="module-lessons">11 aulas</span></div>
+      </div>
+      <div class="module-card" onclick="openArticle('pix-golpe')">
+        <div class="module-icon">📱</div>
+        <h3 class="module-title">Pix: Operação, Riscos e Fraudes</h3>
+        <p class="module-desc">Funcionamento do SPI, tipos de fraude no Pix, responsabilidades regulatórias, MED e boas práticas de prevenção.</p>
+        <div class="module-meta"><span class="module-level lvl-inter">Intermediário</span><span class="module-lessons">7 aulas</span></div>
+      </div>
+    </div>
+
+    <hr class="divider-section">
+    <div class="section-header">
+      <h2 class="section-title"><span class="dot"></span> Publicações em Destaque</h2>
+      <a class="see-all" href="#">Ver todas →</a>
+    </div>
+    <div class="post-grid">
+      <div class="post-card" onclick="openArticle('univ-pagamento')">
+        <div class="post-label">💡 Conceito</div>
+        <h3 class="post-title">Por Que o Brasil Precisa de Mais Educação em Meios de Pagamento?</h3>
+        <p class="post-text">O ecossistema brasileiro de pagamentos é um dos mais avançados do mundo — mas faltam profissionais bem formados. A Universidade de Pagamento nasceu para preencher essa lacuna.</p>
+        <div class="post-footer"><span class="post-likes">👍 847 curtidas</span><button class="post-cta">Ler artigo →</button></div>
+      </div>
+      <div class="post-card" onclick="openArticle('kpi-dashboard')">
+        <div class="post-label">📊 Prático</div>
+        <h3 class="post-title">Os 10 KPIs que Todo Analista de Fraude Deve Monitorar Diariamente</h3>
+        <p class="post-text">Taxa de fraude, taxa de declínio, falso-positivo, chargeback ratio — veja como construir um dashboard que realmente guia decisões.</p>
+        <div class="post-footer"><span class="post-likes">👍 1.2k curtidas</span><button class="post-cta">Ler artigo →</button></div>
+      </div>
+      <div class="post-card" onclick="openArticle('sint-identity')">
+        <div class="post-label">⚠️ Alerta</div>
+        <h3 class="post-title">Identidade Sintética: O Golpe que as IFs Ainda Não Aprenderam a Detectar</h3>
+        <p class="post-text">Fraudadores constroem identidades falsas ao longo de meses, construindo histórico de crédito antes de dar o golpe. Entenda o ciclo completo.</p>
+        <div class="post-footer"><span class="post-likes">👍 963 curtidas</span><button class="post-cta">Ler artigo →</button></div>
+      </div>
+      <div class="post-card" onclick="openArticle('bacen-app')">
+        <div class="post-label">🏛️ Regulatório</div>
+        <h3 class="post-title">Guia Completo: Regulação do Bacen para Prevenção a Fraudes em 2025</h3>
+        <p class="post-text">Todas as resoluções, circulares e normas do Banco Central relevantes para antifraude, compliance e operações de pagamento.</p>
+        <div class="post-footer"><span class="post-likes">👍 1.5k curtidas</span><button class="post-cta">Ler artigo →</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════ VIEW: AI GENERATOR ════════════════════ -->
+<div id="view-ai-gen" class="view">
+  <div class="main-wrap" style="grid-template-columns:1fr">
+    <div>
+      <div class="ai-section">
+        <div class="ai-section-title">🤖 Gerador de Artigos com IA <span class="ai-label">BETA</span></div>
+        <p class="ai-section-desc">Gere análises e artigos sobre fraude, meios de pagamento e IA automaticamente, no estilo editorial do AntiFraude Hub, com base no seu tema escolhido.</p>
+        <div class="ai-gen-grid">
+          <div class="ai-gen-field">
+            <label>Tema / Categoria</label>
+            <select id="aiTopic">
+              <option value="fraude-pix">Fraude no Pix</option>
+              <option value="ia-antifraude">IA em Antifraude</option>
+              <option value="chargeback">Chargeback e Disputas</option>
+              <option value="deepfake">Deepfakes e Identidade Sintética</option>
+              <option value="regulatorio">Regulatório — Bacen / LGPD</option>
+              <option value="3ds">3DS 2.0 e Autenticação</option>
+              <option value="pci">PCI DSS v4.0</option>
+              <option value="open-finance">Open Finance e Risco</option>
+              <option value="score-risco">Score de Risco e ML</option>
+              <option value="kyc">KYC / AML / Onboarding</option>
+            </select>
+          </div>
+          <div class="ai-gen-field">
+            <label>Formato do Artigo</label>
+            <select id="aiFormat">
+              <option value="analise">Análise de Tendência</option>
+              <option value="guia">Guia Prático</option>
+              <option value="alerta">Alerta de Ameaça</option>
+              <option value="opiniao">Opinião / Editorial</option>
+              <option value="case">Case Study</option>
+            </select>
+          </div>
+          <div class="ai-gen-field">
+            <label>Tom de Escrita</label>
+            <select id="aiTone">
+              <option value="tecnico">Técnico e Objetivo</option>
+              <option value="educativo">Educativo e Acessível</option>
+              <option value="executivo">Executivo / C-Level</option>
+              <option value="urgente">Urgente / Alerta</option>
+            </select>
+          </div>
+          <div class="ai-gen-field">
+            <label>Ângulo específico (opcional)</label>
+            <input type="text" id="aiAngle" placeholder="Ex: impacto no e-commerce brasileiro">
+          </div>
+        </div>
+        <button class="ai-gen-btn" id="genBtn" onclick="generateArticle()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          Gerar Artigo com IA
+        </button>
+        <div class="ai-output" id="aiOutput" style="display:none"></div>
+      </div>
+
+      <div class="ai-section">
+        <div class="ai-section-title">💬 Chat sobre Fraude &amp; Pagamentos <span class="ai-label">IA</span></div>
+        <p class="ai-section-desc">Tire dúvidas, explore cenários ou peça análises pontuais sobre qualquer tema do universo antifraude e meios de pagamento.</p>
+        <div id="chatMessages" style="background:var(--li-bg);border-radius:var(--radius-sm);padding:14px;min-height:200px;max-height:400px;overflow-y:auto;margin-bottom:12px;border:1px solid var(--li-gray-light);display:flex;flex-direction:column;gap:10px">
+          <div style="background:var(--li-white);border-radius:8px;padding:11px 14px;border-left:3px solid var(--li-blue);font-size:13.5px;line-height:1.6;max-width:85%">
+            <strong style="color:var(--li-blue);font-size:11px;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:4px">🤖 Assistente</strong>
+            Olá! Sou o assistente especializado do AntiFraude Hub. Pode me perguntar sobre fraudes em pagamentos, regulação do Bacen, chargeback, IA em antifraude, Pix, e muito mais. Como posso ajudar?
+          </div>
+        </div>
+        <div style="display:flex;gap:10px">
+          <input type="text" id="chatInput" placeholder="Pergunta sobre fraude ou meios de pagamento…" style="flex:1;border:1.5px solid var(--li-gray-light);border-radius:24px;padding:9px 16px;font-size:13px;font-family:'DM Sans',sans-serif;background:var(--li-bg);color:var(--li-black);outline:none" onkeydown="if(event.key==='Enter')sendChat()">
+          <button onclick="sendChat()" style="background:var(--li-blue);color:#fff;border:none;border-radius:24px;padding:9px 20px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap">Enviar →</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════════════ VIEW: SEARCH ════════════════════ -->
+<div id="view-search" class="view">
+  <div class="search-page">
+    <h2>Resultados para: "<span class="query-text" id="searchQueryText"></span>"</h2>
+    <p class="search-count" id="searchCount"></p>
+    <div class="search-list" id="searchList"></div>
+  </div>
+</div>
+
+<!-- ════════════════════ FOOTER ════════════════════ -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-logo">AntiFraude<span>Hub</span></div>
+    <div class="footer-links">
+      <a class="footer-link" href="#" onclick="navigate('home')">Feed</a>
+      <a class="footer-link" href="#" onclick="navigate('univ')">Universidade de Pagamento</a>
+      <a class="footer-link" href="#" onclick="navigate('ai-gen')">IA Generator</a>
+      <a class="footer-link" href="https://www.linkedin.com/in/andrew-barros-43165984/" target="_blank">LinkedIn</a>
+    </div>
+    <p class="footer-copy">© 2025 AntiFraude Hub · Criado por Andrew Barros · Todos os direitos reservados</p>
+  </div>
+</footer>
+
+<!-- ═══════════════════ SCRIPTS ═══════════════════ -->
+<script>
+/* ─── DATA ─── */
+const ARTICLES = {
+  'ai-deepfake':   { title:'IA Generativa e Deepfakes: A Nova Fronteira da Fraude em Meios de Pagamento', cat:'IA & FRAUDE', emoji:'🤖', date:'09 ABR 2025 · 8 min', tags:['tag-ia|IA','tag-fraude|Fraude','tag-pagamento|Pagamentos'], color:'#0A66C2' },
+  'pix-golpe':     { title:'Golpe do Pix Agendado: Como Criminosos Exploram Falhas de Confirmação', cat:'PIX · GOLPES', emoji:'🎯', date:'07 ABR 2025 · 6 min', tags:['tag-pix|Pix','tag-fraude|Golpes'], color:'#C4660A' },
+  'bacen-app':     { title:'Bacen Reforça Responsabilidade das IFs em Fraudes APP', cat:'REGULATÓRIO · BACEN', emoji:'🏛️', date:'05 ABR 2025 · 7 min', tags:['tag-regulatorio|Bacen','tag-fraude|APP Fraud'], color:'#7C3AED' },
+  'ml-score':      { title:'Score de Risco em Tempo Real: Como o ML Está Redefinindo a Autorização', cat:'IA · MACHINE LEARNING', emoji:'🧠', date:'03 ABR 2025 · 9 min', tags:['tag-ia|Machine Learning','tag-pagamento|Autorização'], color:'#5055A5' },
+  'chargeback-2025':{ title:'Chargeback Essentials: O Que Todo Profissional Precisa Saber em 2025', cat:'CHARGEBACK · DISPUTES', emoji:'💳', date:'01 ABR 2025 · 8 min', tags:['tag-chargeback|Chargeback','tag-pagamento|Bandeiras'], color:'#DB2777' },
+  '3ds-resultados':{ title:'3DS 2.0 na Prática: Resultados, Conversão e Impacto na Fraude CNP', cat:'3DS · AUTENTICAÇÃO', emoji:'🔐', date:'29 MAR 2025 · 7 min', tags:['tag-tech|3DS 2.0','tag-pagamento|E-commerce'], color:'#0D9488' },
+  'mrc-sp-2025':   { title:'MRC São Paulo 2025: Os 5 Temas Mais Quentes de Prevenção a Fraude', cat:'EVENTOS · MRC', emoji:'🌍', date:'26 MAR 2025 · 6 min', tags:['tag-fraude|Eventos','tag-ia|Tendências'], color:'#057642' },
+  'sint-identity': { title:'Identidade Sintética: O Tipo de Fraude Que Cresce em Silêncio', cat:'FRAUDE AVANÇADA', emoji:'🧬', date:'24 MAR 2025 · 6 min', tags:['tag-ia|IA','tag-fraude|Identidade Sintética'], color:'#CC1016' },
+  'pf-risk':       { title:'Payment Facilitator: Gestão de Risco, Boarding e Conformidade PCI', cat:'PAGAMENTOS · COMPLIANCE', emoji:'🏢', date:'20 MAR 2025 · 10 min', tags:['tag-pagamento|PF','tag-regulatorio|PCI DSS'], color:'#004182' },
+  'univ-pagamento':{ title:'Universidade de Pagamento: Por Que Criamos Este Espaço no LinkedIn', cat:'EDUCAÇÃO · PAGAMENTOS', emoji:'🎓', date:'15 MAR 2025 · 5 min', tags:['tag-pagamento|Educação','tag-tech|LinkedIn'], color:'#0A66C2' },
+  'kpi-dashboard': { title:'Data-Driven Fraud Prevention: KPIs e Dashboards que Realmente Funcionam', cat:'DADOS · OPERAÇÕES', emoji:'📊', date:'10 MAR 2025 · 8 min', tags:['tag-ia|Dados','tag-pagamento|KPIs'], color:'#0A66C2' },
+  'lgpd-antifraude':{ title:'LGPD e Antifraude: O Desafio de Proteger Dados e Combater Golpes', cat:'LGPD · COMPLIANCE', emoji:'⚖️', date:'05 MAR 2025 · 7 min', tags:['tag-regulatorio|LGPD','tag-fraude|Compliance'], color:'#7C3AED' },
+  'intro-pagamentos':{ title:'Fundamentos dos Meios de Pagamento: Do Emissor ao Estabelecimento', cat:'EDUCAÇÃO · FUNDAMENTOS', emoji:'💡', date:'01 MAR 2025 · 10 min', tags:['tag-pagamento|Fundamentos'], color:'#0A66C2' },
+  'fraude-101':    { title:'Prevenção a Fraude do Zero ao Avançado: Guia Completo', cat:'FRAUDE · GUIA', emoji:'🔒', date:'25 FEV 2025 · 12 min', tags:['tag-fraude|Guia','tag-ia|Score'], color:'#CC1016' },
+};
+
+const ARTICLE_PROMPTS = {
+  'ai-deepfake': `Escreva um artigo técnico-editorial completo em português do Brasil com o título "IA Generativa e Deepfakes: A Nova Fronteira da Fraude em Meios de Pagamento no Brasil". O artigo deve ter tom especializado mas acessível, voltado para profissionais de antifraude e pagamentos. Inclua: (1) introdução sobre o cenário atual, (2) como deepfakes de voz e vídeo são usados em fraudes financeiras, (3) casos e vetores de ataque, (4) como as IFs brasileiras estão respondendo, (5) tecnologias de defesa disponíveis, (6) conclusão com chamada à ação. Use seções com títulos H2 e H3, parágrafos claros, e inclua pelo menos um blockquote e uma caixa de destaque (callout). Andrew Barros é especialista com 12+ anos em antifraude e fundador da Universidade de Pagamento no LinkedIn.`,
+  'pix-golpe': `Escreva um artigo técnico em português do Brasil sobre "Golpe do Pix Agendado: Como Criminosos Exploram Falhas de Confirmação". Detalhe: (1) como o golpe funciona passo a passo, (2) engenharia social utilizada, (3) dados de incidência no Brasil, (4) responsabilidade das IFs, (5) como prevenir em larga escala — estratégias para bancos e para o usuário final. Inclua seções H2/H3, um blockquote com dado real/estimado, e uma caixa callout com dica prática. Tom técnico e assertivo.`,
+  'bacen-app': `Escreva um artigo regulatório em português do Brasil sobre "Bacen Reforça Responsabilidade das IFs em Fraudes APP (Authorized Push Payment)". Explique: (1) o que é fraude APP, (2) a posição histórica do Bacen, (3) as novas diretrizes de 2025, (4) impacto nas IFs remetentes e recebedoras, (5) como se adequar. Formato técnico com seções H2/H3, blockquote de normativa e callout com checklist de adequação.`,
+  'ml-score': `Escreva um artigo técnico em português do Brasil sobre "Score de Risco em Tempo Real: Como o ML Está Redefinindo a Autorização de Pagamentos". Inclua: (1) o problema da latência em detecção de fraude, (2) arquitetura de score em tempo real, (3) features mais relevantes para modelos de antifraude, (4) como treinar e monitorar modelos, (5) desafios do conceito drift. Tom técnico, com exemplos práticos para o mercado brasileiro.`,
+  'chargeback-2025': `Escreva um guia completo em português do Brasil sobre "Chargeback Essentials 2025". Cubra: (1) o que é chargeback e por que importa, (2) principais motivos de chargeback por bandeira (Visa, Mastercard, Elo), (3) processo de disputa e representação, (4) métricas de controle (ratio, threshold), (5) estratégias para reduzir chargebacks, (6) impacto do Chargeback Essentials course. Inclua blockquote e callout.`,
+  '3ds-resultados': `Escreva um artigo analítico em português do Brasil sobre "3DS 2.0 na Prática: Resultados, Conversão e Impacto na Fraude CNP". Inclua: (1) o que é 3DS 2.0 e como funciona, (2) o lançamento pelo Cartão Elo com Braspag, (3) dados de resultado em fraude CNP, (4) impacto na taxa de conversão do e-commerce, (5) próximos passos do protocolo. Tom analítico com dados estimados/reais.`,
+  'sint-identity': `Escreva um artigo de alerta em português do Brasil sobre "Identidade Sintética: O Tipo de Fraude Que Cresce em Silêncio nos Portfólios de Crédito". Cubra: (1) o que é identidade sintética, (2) como fraudadores constroem o histórico, (3) por que é difícil de detectar, (4) sinais de alerta, (5) tecnologias de detecção com IA. Tom urgente mas técnico.`,
+  'pf-risk': `Escreva um artigo técnico-operacional em português sobre "Payment Facilitator: Gestão de Risco, Boarding e Conformidade PCI". Inclua: (1) o que é um PayFac/SubAdquirente, (2) regras do Bacen e bandeiras, (3) processo de boarding de estabelecimentos, (4) exposição financeira e controles, (5) requisitos PCI DSS. Tom executivo e detalhado.`,
+  'univ-pagamento': `Escreva um artigo editorial/opinião em português do Brasil: "Universidade de Pagamento: Por Que Criamos Este Espaço de Conhecimento no LinkedIn". Andrew Barros fala sobre a criação da página Universidade de Pagamento, a lacuna de conhecimento no mercado brasileiro de pagamentos, a importância de democratizar o saber sobre meios de pagamento, e o impacto da comunidade. Tom pessoal, inspirador e técnico.`,
+  'kpi-dashboard': `Escreva um guia prático em português sobre "Data-Driven Fraud Prevention: KPIs e Dashboards que Realmente Funcionam". Liste e explique: taxa de fraude, taxa de falso positivo, taxa de aprovação, chargeback ratio, recall do modelo, latência de decisão, índice de representação de disputas. Inclua dicas de visualização e como apresentar para a diretoria. Tom prático e detalhado.`,
+  'lgpd-antifraude': `Escreva um artigo sobre o conflito e a harmonia entre LGPD e Antifraude no Brasil. Cubra: (1) a tensão entre coleta de dados para antifraude e direitos do titular, (2) base legal para tratamento de dados em prevenção a fraudes (legítimo interesse), (3) como estruturar um programa antifraude em conformidade com a LGPD, (4) o papel da ANPD. Tom jurídico-técnico.`,
+  'intro-pagamentos': `Escreva um artigo educativo introdutório sobre "Fundamentos dos Meios de Pagamento: Da Transação ao Liquidação". Explique de forma acessível a cadeia completa: portador, estabelecimento, adquirente, bandeira, emissor, liquidação. Use analogias simples. Ideal para iniciantes no setor. Andrew Barros é co-autor do livro "Introdução aos Meios de Pagamento".`,
+  'fraude-101': `Escreva um guia completo introdutório sobre "Prevenção a Fraude do Zero ao Avançado". Cubra: tipos de fraude (CNP, identidade, amigável, sintética), como funciona um sistema antifraude, conceitos de score, regras e modelos, métricas básicas, e carreira em antifraude no Brasil. Tom educativo e progressivo.`,
+  'mrc-sp-2025': `Escreva uma cobertura editorial do "MRC São Paulo 2025: Os 5 Temas Mais Quentes de Prevenção a Fraude". Os temas foram: IA generativa como vetor de fraude, fraude de afiliados, identidade sintética em crédito, responsabilidade em fraudes APP, e biometria comportamental. Andrew Barros participou como palestrante. Tom jornalístico e especializado.`,
+};
+
+/* ─── NAVIGATION ─── */
+let currentView = 'home';
+let currentArticleId = null;
+
+function navigate(viewName) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  const viewMap = { home:'view-home', article:'view-article', univ:'view-univ', 'ai-gen':'view-ai-gen', search:'view-search' };
+  const el = document.getElementById(viewMap[viewName] || 'view-home');
+  if(el) el.classList.add('active');
+  currentView = viewName;
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  // sync nav tabs
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  const tabMap = { home:0, univ:1, 'ai-gen':2 };
+  const tabs = document.querySelectorAll('.nav-tab');
+  if(tabMap[viewName] !== undefined && tabs[tabMap[viewName]]) tabs[tabMap[viewName]].classList.add('active');
+}
+
+function switchTab(el, view) {
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  navigate(view);
+}
+
+/* ─── ARTICLE ─── */
+async function openArticle(id) {
+  const art = ARTICLES[id];
+  if(!art) return;
+  currentArticleId = id;
+
+  // set meta
+  document.getElementById('artTitle').textContent = art.title;
+  document.getElementById('artCoverCat').textContent = art.cat;
+  document.getElementById('artCoverEmoji').textContent = art.emoji;
+  document.getElementById('artDate').textContent = art.date;
+  document.getElementById('artCover').style.background = `linear-gradient(135deg,${art.color} 0%,${adjustColor(art.color,-40)} 100%)`;
+
+  // tags
+  const tagsEl = document.getElementById('artTags');
+  tagsEl.innerHTML = art.tags.map(t => {
+    const [cls,label] = t.split('|');
+    return `<span class="card-tag ${cls}">${label}</span>`;
+  }).join('');
+
+  // reset & show loading
+  const body = document.getElementById('artBody');
+  body.innerHTML = `<div class="ai-generating"><div class="ai-dots"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div> Gerando artigo com IA…</div>`;
+
+  // reset ask
+  document.getElementById('askResponse').style.display = 'none';
+  document.getElementById('askInput').value = '';
+
+  navigate('article');
+  await generateArticleContent(id, body);
+}
+
+async function generateArticleContent(id, container) {
+  const prompt = ARTICLE_PROMPTS[id];
+  if(!prompt) { container.innerHTML = '<p>Artigo não disponível.</p>'; return; }
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system:`Você é Andrew Barros, especialista em Prevenção a Fraudes e Meios de Pagamento com 12+ anos de experiência, Gerente Executivo no Cartão Elo, co-autor do livro "Introdução aos Meios de Pagamento" e fundador da página Universidade de Pagamento no LinkedIn. Escreva artigos em primeira pessoa ocasional, com tom de especialista que domina o tema mas explica com clareza. Use linguagem técnica mas acessível. Formate o texto com HTML usando <h2>, <h3>, <p>, <ul>, <li>, <blockquote> e <div class="callout"><strong>Ponto-chave</strong><p>...</p></div> quando apropriado. NÃO use markdown, apenas HTML.`,
+        messages:[{ role:'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    const text = data.content?.map(c => c.text||'').join('') || '';
+    container.innerHTML = `<div class="ai-label">✨ Gerado com IA</div>${text || '<p>Não foi possível gerar o artigo agora. Tente novamente.</p>'}`;
+  } catch(e) {
+    container.innerHTML = `<h2>${ARTICLES[id].title}</h2><p>Este artigo aborda um dos temas mais relevantes do ecossistema de pagamentos e prevenção a fraudes no Brasil. Conteúdo em carregamento — verifique sua conexão ou tente novamente.</p>`;
+  }
+}
+
+/* ─── ASK ABOUT ARTICLE ─── */
+async function askAboutArticle() {
+  const q = document.getElementById('askInput').value.trim();
+  if(!q) return;
+  const resp = document.getElementById('askResponse');
+  resp.style.display = 'block';
+  resp.innerHTML = '<div class="ai-generating"><div class="ai-dots"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div> Pensando…</div>';
+  const art = ARTICLES[currentArticleId];
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system:`Você é Andrew Barros, especialista em Prevenção a Fraudes e Meios de Pagamento. Responda de forma direta e especializada em 2-4 parágrafos curtos em português do Brasil. Contexto: estamos discutindo o artigo "${art?.title}".`,
+        messages:[{ role:'user', content: q }]
+      })
+    });
+    const data = await res.json();
+    resp.innerHTML = data.content?.map(c=>c.text||'').join('')||'Não foi possível responder agora.';
+  } catch(e) {
+    resp.innerHTML = 'Erro ao conectar com a IA. Tente novamente.';
+  }
+}
+
+/* ─── GENERATE ARTICLE (AI Gen tab) ─── */
+async function generateArticle() {
+  const topic = document.getElementById('aiTopic').value;
+  const format = document.getElementById('aiFormat').value;
+  const tone = document.getElementById('aiTone').value;
+  const angle = document.getElementById('aiAngle').value;
+  const btn = document.getElementById('genBtn');
+  const output = document.getElementById('aiOutput');
+
+  btn.disabled = true;
+  btn.innerHTML = `<div class="ai-dots"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div> Gerando…`;
+  output.style.display = 'block';
+  output.innerHTML = '<div class="ai-generating"><div class="ai-dots"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div> A IA está redigindo seu artigo…</div>';
+
+  const topicLabels = { 'fraude-pix':'Fraude no Pix','ia-antifraude':'IA em Antifraude','chargeback':'Chargeback e Disputas','deepfake':'Deepfakes e Identidade Sintética','regulatorio':'Regulatório Bacen/LGPD','3ds':'3DS 2.0 e Autenticação','pci':'PCI DSS v4.0','open-finance':'Open Finance e Risco','score-risco':'Score de Risco e ML','kyc':'KYC/AML/Onboarding' };
+  const formatLabels = { analise:'análise de tendência','guia':'guia prático','alerta':'alerta de ameaça','opiniao':'editorial de opinião','case':'case study' };
+  const toneLabels = { tecnico:'técnico e objetivo','educativo':'educativo e acessível','executivo':'executivo para C-Level','urgente':'urgente e de alerta' };
+
+  const prompt = `Escreva um artigo completo em português do Brasil no formato de ${formatLabels[format]} sobre o tema "${topicLabels[topic]}"${angle ? ` com foco específico em: ${angle}` : ''}. Tom: ${toneLabels[tone]}. O artigo deve ter título, pelo menos 4 seções com subtítulos H3, parágrafos ricos, e uma conclusão. Use HTML com <h3>, <p>, <ul>, <li>, <blockquote>. NÃO use markdown.`;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system:`Você é um editor especializado do blog AntiFraude Hub, criado por Andrew Barros — especialista com 12+ anos em Prevenção a Fraudes, Meios de Pagamento e fundador da Universidade de Pagamento no LinkedIn. Gere conteúdo de alta qualidade técnica, informativo e atualizado sobre o ecossistema de pagamentos e antifraude brasileiro.`,
+        messages:[{ role:'user', content: prompt }]
+      })
+    });
+    const data = await res.json();
+    output.innerHTML = `<div class="ai-label">✨ Gerado com IA — ${topicLabels[topic]}</div>` + (data.content?.map(c=>c.text||'').join('')||'Erro ao gerar.');
+  } catch(e) {
+    output.innerHTML = 'Erro de conexão com a IA. Tente novamente.';
+  }
+  btn.disabled = false;
+  btn.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="white"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg> Gerar Artigo com IA`;
+}
+
+/* ─── CHAT ─── */
+async function sendChat() {
+  const input = document.getElementById('chatInput');
+  const msg = input.value.trim();
+  if(!msg) return;
+  input.value = '';
+  const chat = document.getElementById('chatMessages');
+
+  // user bubble
+  chat.innerHTML += `<div style="background:var(--li-blue);color:#fff;border-radius:8px;padding:10px 14px;font-size:13.5px;line-height:1.6;max-width:80%;align-self:flex-end;margin-left:auto"><strong style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:3px;opacity:.8">Você</strong>${msg}</div>`;
+
+  // loading
+  const loadId = 'load-'+Date.now();
+  chat.innerHTML += `<div id="${loadId}" style="background:var(--li-white);border-radius:8px;padding:10px 14px;border-left:3px solid var(--li-blue);font-size:13.5px;max-width:85%"><strong style="color:var(--li-blue);font-size:11px;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:3px">🤖 Assistente</strong><div class="ai-generating" style="padding:0;background:none;border-radius:0"><div class="ai-dots"><div class="ai-dot"></div><div class="ai-dot"></div><div class="ai-dot"></div></div></div></div>`;
+  chat.scrollTop = chat.scrollHeight;
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1000,
+        system:`Você é um assistente especializado em Prevenção a Fraudes e Meios de Pagamento, parte do AntiFraude Hub criado por Andrew Barros — especialista com 12+ anos no setor, gerente executivo no Cartão Elo e fundador da Universidade de Pagamento no LinkedIn. Responda em português do Brasil de forma direta, técnica mas acessível, em no máximo 3-4 parágrafos ou com listas quando adequado. NÃO use markdown, apenas texto puro.`,
+        messages:[{ role:'user', content: msg }]
+      })
+    });
+    const data = await res.json();
+    const answer = data.content?.map(c=>c.text||'').join('')||'Desculpe, não consegui responder. Tente novamente.';
+    const el = document.getElementById(loadId);
+    if(el) el.innerHTML = `<strong style="color:var(--li-blue);font-size:11px;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:3px">🤖 Assistente</strong>${answer.replace(/\n/g,'<br>')}`;
+  } catch(e) {
+    const el = document.getElementById(loadId);
+    if(el) el.innerHTML = `<strong style="color:var(--li-blue);font-size:11px;text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:3px">🤖 Assistente</strong>Erro de conexão. Verifique sua internet e tente novamente.`;
+  }
+  chat.scrollTop = chat.scrollHeight;
+}
+
+/* ─── SEARCH ─── */
+const ALL_ARTICLES_SEARCH = Object.entries(ARTICLES).map(([id,a]) => ({
+  id, title:a.title, cat:a.cat, emoji:a.emoji, date:a.date,
+  excerpt:'Análise especializada sobre '+a.cat.toLowerCase()+' no ecossistema de pagamentos brasileiro.'
+}));
+
+function handleSearchInput(val) {
+  const drop = document.getElementById('searchDrop');
+  if(!val || val.length < 2) { drop.classList.remove('open'); return; }
+  const results = ALL_ARTICLES_SEARCH.filter(a => a.title.toLowerCase().includes(val.toLowerCase()) || a.cat.toLowerCase().includes(val.toLowerCase())).slice(0,5);
+  if(!results.length) { drop.classList.remove('open'); return; }
+  drop.innerHTML = results.map(r => `<div class="search-result-item" onclick="openArticle('${r.id}');document.getElementById('globalSearch').value='';document.getElementById('searchDrop').classList.remove('open')"><div class="sri-cat">${r.emoji} ${r.cat}</div><div class="sri-title">${r.title}</div></div>`).join('');
+  drop.classList.add('open');
+}
+
+function handleSearchKey(e) {
+  if(e.key==='Enter') {
+    const val = e.target.value.trim();
+    document.getElementById('searchDrop').classList.remove('open');
+    if(val) showSearchResults(val);
+  }
+  if(e.key==='Escape') { document.getElementById('searchDrop').classList.remove('open'); }
+}
+
+function showSearchResults(query) {
+  const results = ALL_ARTICLES_SEARCH.filter(a => a.title.toLowerCase().includes(query.toLowerCase()) || a.cat.toLowerCase().includes(query.toLowerCase()));
+  document.getElementById('searchQueryText').textContent = query;
+  document.getElementById('searchCount').textContent = results.length ? `${results.length} resultado(s) encontrado(s)` : 'Nenhum resultado encontrado';
+  const list = document.getElementById('searchList');
+  if(!results.length) {
+    list.innerHTML = `<div class="no-results"><div class="icon">🔍</div><p>Nenhum artigo encontrado para "<strong>${query}</strong>".<br>Tente termos como: pix, fraude, chargeback, IA, bacen…</p></div>`;
+  } else {
+    list.innerHTML = results.map(r => `<div class="search-card" onclick="openArticle('${r.id}')"><span class="search-card-icon">${r.emoji}</span><div class="search-card-body"><div class="search-card-cat">${r.cat}</div><h3 class="search-card-title">${r.title}</h3><p class="search-card-excerpt">${r.excerpt}</p><div class="search-card-date">${r.date}</div></div></div>`).join('');
+  }
+  navigate('search');
+  document.getElementById('globalSearch').value = '';
+}
+
+document.addEventListener('click', e => {
+  const drop = document.getElementById('searchDrop');
+  if(!e.target.closest('.nav-search')) drop.classList.remove('open');
+});
+
+/* ─── DARK MODE ─── */
+function toggleDark() {
+  const html = document.documentElement;
+  const isDark = html.getAttribute('data-theme')==='dark';
+  html.setAttribute('data-theme', isDark ? 'light' : 'dark');
+  document.getElementById('darkToggle').textContent = isDark ? '🌙' : '☀️';
+  localStorage.setItem('theme', isDark ? 'light' : 'dark');
+}
+
+(function initTheme() {
+  const saved = localStorage.getItem('theme') || 'light';
+  document.documentElement.setAttribute('data-theme', saved);
+  if(saved==='dark') document.getElementById('darkToggle').textContent = '☀️';
+})();
+
+/* ─── UTIL ─── */
+function adjustColor(hex, amount) {
+  const num = parseInt(hex.replace('#',''),16);
+  const r = Math.max(0,Math.min(255,(num>>16)+amount));
+  const g = Math.max(0,Math.min(255,((num>>8)&0xff)+amount));
+  const b = Math.max(0,Math.min(255,(num&0xff)+amount));
+  return '#'+(r<<16|g<<8|b).toString(16).padStart(6,'0');
+}
+</script>
+</body>
+</html>
